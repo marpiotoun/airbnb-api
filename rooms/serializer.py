@@ -20,7 +20,8 @@ class DetailRoomSerializer(serializers.ModelSerializer):
 
 
 class RoomModelSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
+    is_fav = serializers.SerializerMethodField()
 
     class Meta:
         model = Room
@@ -39,12 +40,21 @@ class RoomModelSerializer(serializers.ModelSerializer):
             "check_in",
             "check_out",
             "instant_book",
+            "is_fav",
         )
         read_only_fields = (
             "id",
             "user",
             "created",
         )
+
+    def get_is_fav(self, obj):
+        request = self.context.get("request", None)
+        if request is not None:
+            user = request.user
+            if user.is_authenticated:
+                return obj in user.favs.all()
+        return False
 
     def validate(self, data):
         if not self.instance:
@@ -67,6 +77,12 @@ class RoomModelSerializer(serializers.ModelSerializer):
                 )
             else:
                 return data
+
+    def create(self, validated_data):
+        request = self.context.get("request")
+        user = request.user
+        room = Room.objects.create(**validated_data, user=user)
+        return room
 
 
 #

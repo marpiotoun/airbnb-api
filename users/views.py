@@ -1,3 +1,6 @@
+import jwt
+
+from django.conf import settings
 from django.contrib.auth import authenticate
 
 from rest_framework.permissions import IsAuthenticated
@@ -90,5 +93,9 @@ def login(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
     else:
         user = authenticate(username=username, password=password)
-    print(user)
+    if user is not None:
+        encoded = jwt.encode({"id": user.pk}, settings.SECRET_KEY, algorithm="HS256")
+        return Response(data={"token": encoded})
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     return Response(status=status.HTTP_200_OK)
