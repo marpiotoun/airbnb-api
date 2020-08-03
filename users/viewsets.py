@@ -27,7 +27,9 @@ class UserViewSet(ModelViewSet):
             permission_classes = [permissions.AllowAny]
         else:
             # action in [destroy, update, partial_update]
-            permission_classes = [IsSelf]
+            permission_classes = [
+                IsSelf,
+            ]
         return [permission() for permission in permission_classes]
 
     @action(detail=False, methods=["post"])
