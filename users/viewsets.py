@@ -23,7 +23,7 @@ class UserViewSet(ModelViewSet):
         permission_classes = []
         if self.action == "list":
             permission_classes = [permissions.IsAdminUser]
-        elif self.action in ["create", "retrieve", "favs"]:
+        elif self.action in ["create", "retrieve", "favs", "login"]:
             permission_classes = [permissions.AllowAny]
         else:
             # action in [destroy, update, partial_update]
@@ -36,6 +36,7 @@ class UserViewSet(ModelViewSet):
     def login(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
+        print(request.data)
         if not username or not password:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
