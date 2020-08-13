@@ -1,27 +1,18 @@
 from rest_framework import serializers
 from users.serializers import UserSerializer
-from .models import Room
+from .models import Room, Photo
 
 
-class RoomSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
+class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Room
-        fields = ("pk", "name", "price", "user")
-
-
-class DetailRoomSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
-    class Meta:
-        model = Room
-        exclude = ("modified",)
+        model = Photo
+        fields = ("id", "file",)
 
 
 class RoomModelSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     is_fav = serializers.SerializerMethodField()
+    photos = PhotoSerializer(read_only=True, many=True)
 
     class Meta:
         model = Room
@@ -31,6 +22,7 @@ class RoomModelSerializer(serializers.ModelSerializer):
             "created",
             "name",
             "address",
+            "photos",
             "price",
             "beds",
             "lat",

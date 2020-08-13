@@ -6,11 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Room
-from .serializer import (
-    RoomSerializer,
-    DetailRoomSerializer,
-    RoomModelSerializer,
-)
+from .serializer import RoomModelSerializer
 
 
 class RoomsView(APIView):
