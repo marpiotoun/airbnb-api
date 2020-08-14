@@ -51,22 +51,23 @@ class UserViewSet(ModelViewSet):
     @action(detail=True)
     def favs(self, request, pk):
         user = self.get_object()
-        serializer = RoomModelSerializer(user.favs.all(), many=True)
+        serializer = RoomModelSerializer(user.favs.all(), many=True, context={"request": request})
         return Response(data=serializer.data)
 
     @favs.mapping.put
     def toggle_favs(self, request, pk):
-        pk = request.data.get("pk", request.data.get("id", None))
-        if pk is not None:
+        room_pk = request.data.get("pk", request.data.get("id", None))
+        if room_pk is not None:
             try:
-                room = Room.objects.get(pk=pk)
+                room = Room.objects.get(pk=room_pk)
                 user = self.get_object()
+                print(room in user.favs.all())
                 if room in user.favs.all():
                     user.favs.remove(room)
                 else:
                     user.favs.add(room)
                 user.save()
-                serializer = RoomModelSerializer(user.favs.all(), many=True)
+                serializer = RoomModelSerializer(user.favs.all(), context={"request": request}, many=True)
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             except Room.DoesNotExist:
                 pass

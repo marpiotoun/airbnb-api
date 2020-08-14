@@ -44,6 +44,7 @@ class RoomModelSerializer(serializers.ModelSerializer):
         request = self.context.get("request", None)
         if request is not None:
             user = request.user
+            print(user.favs.all())
             if user.is_authenticated:
                 return obj in user.favs.all()
         return False
